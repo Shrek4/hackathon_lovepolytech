@@ -8,12 +8,13 @@ import {
   SelectionChangedEventArgs,
   Extension
 } from "ng2-adsk-forge-viewer";
-import { ACCESS_TOKEN, AppComponent } from 'src/app/app.component';
+import { AppComponent } from 'src/app/app.component';
 import { MyExtension } from "./my-extension";
+import { HttpClient} from '@angular/common/http';
+import {Token} from '../../../token';
 
 
 
-console.log(ACCESS_TOKEN);
 //"eyJhbGciOiJSUzI1NiIsImtpZCI6IlU3c0dGRldUTzlBekNhSzBqZURRM2dQZXBURVdWN2VhIn0.eyJzY29wZSI6WyJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJidWNrZXQ6Y3JlYXRlIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpyZWFkIl0sImNsaWVudF9pZCI6IjN5dGNJRVBjbEVjck9VV0g2ZDZkWVFzVFJ4OUExT0lTIiwiYXVkIjoiaHR0cHM6Ly9hdXRvZGVzay5jb20vYXVkL2Fqd3RleHA2MCIsImp0aSI6ImI2VjM2TktFNFJXY3k3SjdEbnNMbXRIMW1TdjNaUzMzdzFWZEZMMG01Rnd1MVdQRXdubWtWaWRMQmlnMnpvMDMiLCJleHAiOjE2Mzk3NTQ2ODF9.dHCk1qenXb6JP8EeJeVDC7jB8L0zlYPWgcjIsvVXwNi5YIf-UXbxx6WKMNFRXjZTkMCMRxG0ZSuU-ETM9Ktz6wREAb1kEvW4SYTekHBFBWb3auEIBalKzFiOrX4LKIjPV7NU878ws7tRbUACkHqiyJHr7XLOjUMK04Ncat4-If8Afy4_TYKnFqujSzNdO7fgKWhu4NuGQfKEJ7zx6UiAOpS-MZ4Xn2HjRJj8fWRzRt11BYvMk-VOTTlQSaI9b1D8NlSEL9Lhpu713XaqJDE_s--e6OZkWmM_Ef9Kb516zjXrb3J82P5avPHI-RPbYrHPvJMNfwP-bBT587AcAgqcQQ";
 // export const DOCUMENT_URN = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bW9kZWwyMDIxLTEyLTE3LTExLTQ0LTIyLWQ0MWQ4Y2Q5OGYwMGIyMDRlOTgwMDk5OGVjZjg0MjdlLzcxMTExMi5pcHQ";
 
@@ -585,22 +586,21 @@ export class MainComponent implements OnInit {
   CloseTree(){
     this.HideShadowBox()
   }
-
-  constructor() { 
-  }
+  public  token: Token;
+  constructor(private http: HttpClient){}
 
   
 
   public ngOnInit() {
     
-    
+    this.http.get('http://localhost:3000/oauth').subscribe((data:any) => this.token=new Token(data.access_token, data.expires_in));
     this.viewerOptions = {
       initializerOptions: {
         env: "AutodeskProduction",
         getAccessToken: (
           onGetAccessToken: (token: string, expire: number) => void
         ) => {
-          onGetAccessToken(ACCESS_TOKEN.access_token, ACCESS_TOKEN.expires_in);
+          onGetAccessToken(this.token.access_token, this.token.expires_in);
         },
         api: "derivativeV2",
         enableMemoryManagement: true
